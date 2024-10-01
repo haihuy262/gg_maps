@@ -55,9 +55,13 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     ),
-                    Visibility(
-                      visible: searchController.text.isEmpty ? false : true,
-                      child: Expanded(
+                    if (state.isLoading)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: CircularProgressIndicator(),
+                      )
+                    else if (searchController.text.isNotEmpty)
+                      Expanded(
                         child: ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
@@ -86,8 +90,7 @@ class _HomePageState extends State<HomePage> {
                             );
                           },
                         ),
-                      ),
-                    )
+                      )
                   ],
                 ),
               ),

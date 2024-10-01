@@ -13,7 +13,8 @@ class KeyWordBloc extends Bloc<KeyWordEvent, KeyWordState> {
   final apiKey = "e6Da1BDcNVkX8fdSrGPMW3MJbh05Ehm68NNhLWAwo6o";
   final apiUrl = "https://autocomplete.search.hereapi.com/v1/autocomplete";
   KeyWordBloc()
-      : super(const KeyWordState(showIconClear: false, addresses: [])) {
+      : super(const KeyWordState(
+            showIconClear: false, addresses: [], isLoading: false)) {
     on<FocusTextField>(_onFocusTextField);
     on<UnfocusTextField>(_onUnfocusTextField);
     on<TextChange>(
@@ -29,11 +30,12 @@ class KeyWordBloc extends Bloc<KeyWordEvent, KeyWordState> {
 
   FutureOr<void> _onUnfocusTextField(
       UnfocusTextField event, Emitter<KeyWordState> emit) {
-    emit(state.copyWith(showIconClear: false));
+    emit(state.copyWith(showIconClear: false, isLoading: false));
   }
 
   FutureOr<void> _onTextChange(
       TextChange event, Emitter<KeyWordState> emit) async {
+    emit(state.copyWith(isLoading: true));
     try {
       final response = await Dio().get(apiUrl, queryParameters: {
         "q": event.keyWorld,
@@ -43,7 +45,7 @@ class KeyWordBloc extends Bloc<KeyWordEvent, KeyWordState> {
       List items = result["items"];
       List<String> address =
           items.map((item) => item["address"]["label"] as String).toList();
-      emit(state.copyWith(addresses: address));
+      emit(state.copyWith(addresses: address, isLoading: false));
     } catch (e) {
       debugPrint(e.toString());
     }
